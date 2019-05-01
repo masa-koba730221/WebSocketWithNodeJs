@@ -1,0 +1,1 @@
+docker run -it --rm -w /app -v $(pwd):/app webclient:0.1 ng new $1
