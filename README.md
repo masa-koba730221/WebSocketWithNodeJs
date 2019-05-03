@@ -35,8 +35,8 @@ $> ./start.sh
 $> cd server
 $> ./startShell.sh
 ```   
-3.2. Run Server
-The follow is in sever shell
+3.2. Run Server   
+The following is in sever shell
 ```
 ($> npm install)
 $> npm run run
@@ -47,8 +47,8 @@ $> npm run run
 $> cd client
 $> ./startShell.sh
 ```
-4.2 Run Client
-the follow i in client shell
+4.2 Run Client   
+The following is in client shell
 ```
 ($> npm install)
 $> ngserve.sh
