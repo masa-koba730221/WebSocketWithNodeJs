@@ -3,25 +3,25 @@ import * as Express from 'express';
 import * as WebSocket from 'websocket';
 import { iAcceptor } from './iAcceptor';
 
-export class User {
+export class Device {
   public name: string;
-  public password: string;
+  public product: string;
 
-  constructor(name: string, password: string) {
+  constructor(name: string, product: string) {
     this.name = name;
-    this.password = password;
+    this.product = product;
   }
 }
 
-export class UserRoutes implements iAcceptor {
+export class DevicesRoutes implements iAcceptor {
   private clients = Array<WebSocket.connection>();
-  private users: User[] = [
-    new User('mkoba1', 'pass1'),
-    new User('mkoba2', 'pass2'),
+  private devices: Device[] = [
+    new Device('usb1', 'mkobaPro1'),
+    new Device('hdd1', 'mkobaPro2'),
   ];
 
   constructor(app: Express.Application) {
-    app.route('/api/users')
+    app.route('/api/devices')
       .get((req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
         console.log('http: get');
         res.send(JSON.stringify('message'));
@@ -29,11 +29,11 @@ export class UserRoutes implements iAcceptor {
       })
       .post((req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
         console.log(`data: ${JSON.stringify(req.body)}`);
-        (req.body as User[]).forEach(user => {
-          this.users.push(new User(user.name, user.password));
+        (req.body as Device[]).forEach(user => {
+          this.devices.push(new Device(user.name, user.product));
         });
         this.broadcast();
-        res.send(JSON.stringify(this.users));
+        res.send(JSON.stringify(this.devices));
         next();
       })
       .put((req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
@@ -49,7 +49,7 @@ export class UserRoutes implements iAcceptor {
   public acceptor(connect: WebSocket.connection) {
     this.clients.push(connect);
     console.log((new Date()) + ' Connection accepted.');
-    connect.send(JSON.stringify(this.users));
+    connect.send(JSON.stringify(this.devices));
     connect.on('message', (data: WebSocket.IMessage) => {
       if (data.type === 'utf8') {
         console.log(`message: ${data.utf8Data}`);
@@ -84,7 +84,7 @@ export class UserRoutes implements iAcceptor {
 
   private broadcast() {
     this.clients.forEach(client => {
-      client.send(JSON.stringify(this.users));
+      client.send(JSON.stringify(this.devices));
     });
   }
 }

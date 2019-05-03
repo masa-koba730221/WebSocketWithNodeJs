@@ -5,17 +5,20 @@ import * as Mongoose from 'mongoose';
 import * as WebSocket from 'websocket';
 import * as http from 'http';
 import { UserRoutes } from './routes/userRoutes';
+import { DevicesRoutes } from './routes/devicesRoutes';
 import { iAcceptor } from './routes/iAcceptor';
 
 export class Main {
   private app: Express.Application;
   private port = 3000;
   private userRoutes: UserRoutes;
+  private deviceRoutes: DevicesRoutes;
 
   constructor() {
     this.app = Express();
     this.init();
     this.userRoutes = new UserRoutes(this.app);
+    this.deviceRoutes = new DevicesRoutes(this.app);
     this.initMongoose();
 
     const server = http.createServer(this.app);
@@ -53,7 +56,8 @@ export class Main {
     wss.on('request', (request: WebSocket.request) => {
       console.log(`resourceUrl: ${JSON.stringify(request.resourceURL)}`);
       console.log(`origin: ${request.origin}`);
-      this.routeMap(request, '/users', this.userRoutes);
+      this.routeMap(request, '/ws/users', this.userRoutes);
+      this.routeMap(request, '/ws/devices', this.deviceRoutes);
     });
 
     wss.on('close', (request: WebSocket.connection) => {

@@ -1,16 +1,9 @@
-import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnDestroy } from '@angular/core';
 import { map } from 'rxjs/operators';
-
-export class User {
-  name: string;
-  password: string;
-
-  constructor(name: string, password: string) {
-    this.name = name;
-    this.password = password;
-  }
-}
+import { UsersService } from './service/users.service';
+import { DevicesService } from './service/devices.service';
+import { User } from './models/User';
+import { Device } from './models/Device';
 
 @Component({
   selector: 'app-root',
@@ -19,55 +12,38 @@ export class User {
 })
 export class AppComponent {
   title = 'App';
-
-  httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type':  'application/json',
-    })
-  };
-
-  wss: WebSocket;
+  userlist: User[];
+  devicelist: Device[];
 
   constructor(
-    private http: HttpClient,
+    private usersService: UsersService,
+    private devicesService: DevicesService,
   ) {
-
-    http.get<string>('http://localhost:3000/user')
-    .subscribe(x => {
-      console.log('message: ' + x);
-    },
-    err => {
-      console.error(err);
-    });
-
-    this.wss = new WebSocket('ws://localhost:3000/users');
-    this.wss.onopen = (ev) => {
-      console.log('ws:open :' + JSON.stringify(ev));
-    };
-    this.wss.onclose = (ev) => {
-      console.log('ws:closed : ' + JSON.stringify(ev));
-    };
-    this.wss.onmessage = (mes: MessageEvent) => {
-      console.log('ws:message :' + mes.data);
-      if (mes && mes.data) {
-        const users = JSON.parse(mes.data);
-        users.forEach(user => {
-          console.log(`ws: name: ${user.name} pass: ${user.password}`);
-        });
-      }
-    };
-  }
-
-  clicked() {
-    const list = Array<User>();
-    list.push(new User('mkoba3', 'pass3'));
-    this.http.post<User[]>('http://localhost:3000/user', list, this.httpOptions)
-    .subscribe(
-      mes => {
-        if (mes) {
-          (mes as User[]).forEach(user => {
-            console.log(`http res name: ${user.name} pass: ${user.password}`);
+    usersService.connect().subscribe(
+      users => {
+        if (users) {
+          this.userlist = users;
+          users.forEach(user => {
+            console.log(`user name:${user.Name} password:${user.Password}`);
           });
+        } else {
+          console.log('connected to users');
+        }
+      },
+      err => {
+        console.error(err);
+      }
+    );
+
+    devicesService.connect().subscribe(
+      devices => {
+        if (devices) {
+          this.devicelist = devices;
+          devices.forEach(device => {
+            console.log(`device name:${device.Name} product:${device.Product}`);
+          });
+        } else {
+          console.log('connected to devices');
         }
       },
       err => {
@@ -76,9 +52,35 @@ export class AppComponent {
     );
   }
 
-  disconnected() {
-    if (this.wss.readyState === WebSocket.OPEN) {
-      this.wss.close();
+  async addUsersClicked() {
+    try {
+      const count = this.userlist.length;
+      const list = Array<User>();
+      list.push(new User(`mkoba${count + 1}`, `pass${count + 1}`));
+      const result = await this.usersService.addUsers(list);
+      if (result) {
+        console.log('user add success');
+      } else {
+        console.log('user add failed');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async addDevicesClicked() {
+    try {
+      const count = this.devicelist.length;
+      const list = Array<Device>();
+      list.push(new Device(`HDD${count + 1}`, `Product${count + 1}`));
+      const result = await this.devicesService.addDevices(list);
+      if (result) {
+        console.log('device add success');
+      } else {
+        console.log('device add failed');
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 }

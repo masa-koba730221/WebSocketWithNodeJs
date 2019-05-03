@@ -5,6 +5,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+// import { WebsocketService } from './service/websocket.service';
+import { UsersService } from './service/users.service';
+import { DevicesService } from './service/devices.service';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -14,7 +18,11 @@ import { AppComponent } from './app.component';
     AppRoutingModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+  //  { provide: WebsocketService, useFactory: () => new WebsocketService(), deps: [] },
+    UsersService,
+    DevicesService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
