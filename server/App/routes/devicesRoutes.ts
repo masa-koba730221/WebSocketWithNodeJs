@@ -48,7 +48,7 @@ export class DevicesRoutes implements iAcceptor {
 
   public acceptor(connect: WebSocket.connection) {
     this.clients.push(connect);
-    console.log((new Date()) + ' Connection accepted.');
+    console.log((new Date()) + ' Connection accepted. Device Route');
     connect.send(JSON.stringify(this.devices));
     connect.on('message', (data: WebSocket.IMessage) => {
       if (data.type === 'utf8') {
@@ -61,7 +61,7 @@ export class DevicesRoutes implements iAcceptor {
       }
     });
     connect.on('close', (code: number, desc: string) => {
-      console.log((new Date()) + ' Peer ' + connect.remoteAddress + ' disconnected.');
+      console.log((new Date()) + ' Peer ' + connect.remoteAddress + ' disconnected. Device Route');
       this.close(connect, WebSocket.connection.CLOSE_REASON_NORMAL, 'Normal Close');
     });
 

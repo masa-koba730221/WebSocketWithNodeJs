@@ -1,21 +1,12 @@
 export class User {
+  public name: string;
+  public password: string;
+
   constructor(
-    private name: string,
-    private password: string
+    name: string,
+    password: string
   ) {
-  }
-
-  public get Name() {
-    return this.name;
-  }
-  public set Name(name: string) {
     this.name = name;
-  }
-
-  public get Password() {
-    return this.password;
-  }
-  public set Password(password: string) {
     this.password = password;
   }
 }

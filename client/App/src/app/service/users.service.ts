@@ -27,7 +27,7 @@ export class UsersService extends WebsocketService {
     return this.userMes = this._connect('ws://localhost:3000/ws/users')
     .pipe(map((res: MessageEvent) => {
       if (res.data) {
-        const users = JSON.parse(res.data);
+        const users = JSON.parse(res.data) as User[];
         const list = Array<User>();
         users.forEach(user => {
           list.push(new User(user.name, user.password));
@@ -56,6 +56,9 @@ export class UsersService extends WebsocketService {
         (err: Error) => {
           console.error(err);
           reject(err);
+        },
+        () => {
+          console.log('addUser completed');
         }
       );
     });
