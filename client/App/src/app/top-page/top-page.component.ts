@@ -5,6 +5,10 @@ import { User } from '../models/User';
 import { Device } from '../models/Device';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { ModalComponent } from '../modal/modal.component';
+import { ModalService } from '../modal/modal.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-top-page',
@@ -17,7 +21,8 @@ export class TopPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private usersService: UsersService,
-    private router: Router
+    private router: Router,
+    private modal: ModalService,
   ) {
     this.subscription = usersService.connect().subscribe(
       users => {
@@ -57,6 +62,10 @@ export class TopPageComponent implements OnInit, OnDestroy {
 
   toNextPageClicked() {
     this.router.navigate(['/next']);
+  }
+
+  popupClicked() {
+    this.modal.open(ConfirmDialogComponent, ConfirmDialogComponent.id);
   }
 
   ngOnInit() {
